@@ -11,7 +11,6 @@ M.loaded = false
 M.ns = vim.api.nvim_create_namespace("todo-comments")
 
 --- @class TodoOptions
--- TODO: add support for markdown todos
 local defaults = {
   signs = true, -- show icons in the signs column
   sign_priority = 8, -- sign priority
@@ -54,6 +53,10 @@ local defaults = {
     max_line_len = 400, -- ignore lines longer than this
     exclude = {}, -- list of file types to exclude highlighting
     throttle = 200,
+  },
+  -- configure comments_only and signs for specific filetypes
+  filetypes = {
+    markdown = { comments_only = false, signs = true },
   },
   -- list of named colors where we try to extract the guifg from the
   -- list of hilight groups or use the hex color if hl not found as a fallback

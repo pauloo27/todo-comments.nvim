@@ -163,9 +163,17 @@ function M.highlight(buf, first, last, _event)
     local ok, start, finish, kw = pcall(M.match, line)
     local lnum = first + l - 1
 
-    local comments_only = Config.options.highlight.comments_only
+    if kw then
+      kw = Config.keywords[kw] or kw
+    end
     local kw_opts = Config.options.keywords[kw]
+    local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+    local ft_opts = Config.options.filetypes[ft]
 
+    local comments_only = Config.options.highlight.comments_only
+    if ft_opts and ft_opts.comments_only ~= nil then
+      comments_only = ft_opts.comments_only
+    end
     if kw_opts and kw_opts.comments_only ~= nil then
       comments_only = kw_opts.comments_only
     end
@@ -199,13 +207,7 @@ function M.highlight(buf, first, last, _event)
       end
     end
 
-    if kw then
-      kw = Config.keywords[kw] or kw
-    end
-
-    local opts = Config.options.keywords[kw]
-
-    if opts then
+    if kw_opts then
       start = start - 1
       finish = finish - 1
 
@@ -244,8 +246,11 @@ function M.highlight(buf, first, last, _event)
       if not is_multiline then
         -- signs
         local show_sign = Config.options.signs
-        if opts.signs ~= nil then
-          show_sign = opts.signs
+        if ft_opts and ft_opts.signs ~= nil then
+          show_sign = ft_opts.signs
+        end
+        if kw_opts.signs ~= nil then
+          show_sign = kw_opts.signs
         end
         if show_sign then
           vim.fn.sign_place(
