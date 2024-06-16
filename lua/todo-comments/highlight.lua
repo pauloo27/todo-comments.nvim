@@ -163,10 +163,17 @@ function M.highlight(buf, first, last, _event)
     local ok, start, finish, kw = pcall(M.match, line)
     local lnum = first + l - 1
 
+    local comments_only = Config.options.highlight.comments_only
+    local kw_opts = Config.options.keywords[kw]
+
+    if kw_opts and kw_opts.comments_only ~= nil then
+      comments_only = kw_opts.comments_only
+    end
+
     if ok and start then
       ---@cast kw string
       if
-        Config.options.highlight.comments_only
+        comments_only
         and not M.is_quickfix(buf)
         and not M.is_comment(buf, lnum, start - 1)
       then
